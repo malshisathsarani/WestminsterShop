@@ -1,6 +1,8 @@
 package Implementation;
 
-public class Electronics extends Product {
+import java.io.Serializable;
+
+public class Electronics extends Product implements Serializable {
 
 
     public String brand;

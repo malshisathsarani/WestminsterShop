@@ -1,22 +1,23 @@
 package Implementation;
 
-
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Scanner;
 
-
-public class WestminsterShoppingManager implements ShoppingManager{
+public class WestminsterShoppingManager implements ShoppingManager {
 
     private static int count = 0;
-
     public static ArrayList<Product> AllProducts = new ArrayList<Product>();
 
     @Override
     public void addProduct() {
         Scanner input = new Scanner(System.in);
-
 
         System.out.println("What is the product type? (Electronics or Clothing)");
         String pType = input.nextLine();
@@ -95,14 +96,15 @@ public class WestminsterShoppingManager implements ShoppingManager{
 
     @Override
     public void printProduct() {
-        if (AllProducts.isEmpty()) {
-            System.out.println("Products are empty");
+        ArrayList<Product> products = readProductsFromFile();
+
+        if (products.isEmpty()) {
+            System.out.println("No products found.");
         } else {
-
             // Sort products by product ID
-            Collections.sort(AllProducts, Comparator.comparing(Product::getProductID));
+            Collections.sort(products, Comparator.comparing(Product::getProductID));
 
-            for (Product p : AllProducts) {
+            for (Product p : products) {
                 if (p instanceof Electronics) {
                     Electronics e = (Electronics) p;
                     System.out.println("Electronics:");
@@ -130,9 +132,23 @@ public class WestminsterShoppingManager implements ShoppingManager{
 
     @Override
     public void saveProductsToFile() {
-
-
-
+        try (FileOutputStream fileOut = new FileOutputStream("products.ser");
+             ObjectOutputStream out = new ObjectOutputStream(fileOut)) {
+            out.writeObject(AllProducts);
+            System.out.println("Products have been serialized and saved to products.ser");
+        } catch (IOException i) {
+            i.printStackTrace();
+        }
     }
 
+    public ArrayList<Product> readProductsFromFile() {
+        ArrayList<Product> products = new ArrayList<>();
+        try (FileInputStream fileIn = new FileInputStream("products.ser");
+             ObjectInputStream in = new ObjectInputStream(fileIn)) {
+            products = (ArrayList<Product>) in.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return products;
+    }
 }

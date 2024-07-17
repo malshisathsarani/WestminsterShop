@@ -1,6 +1,8 @@
 package Implementation;
 
-public class Clothing extends Product {
+import java.io.Serializable;
+
+public class Clothing extends Product implements Serializable {
 
     public String color;
     public  String size;
